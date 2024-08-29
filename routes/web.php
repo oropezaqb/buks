@@ -7,6 +7,12 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AbilityController;
 use App\Http\Controllers\CurrentCompanyController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\LineItemController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\ReportLineItemController;
+use App\Http\Controllers\JournalEntryController;
+use App\Http\Controllers\SubsidiaryLedgerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -33,4 +39,10 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('abilities', AbilityController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('current_company', CurrentCompanyController::class);
     Route::resource('applications', ApplicationController::class);
+    Route::resource('line_items', LineItemController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('accounts', AccountController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('documents', DocumentController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('subsidiary_ledgers', SubsidiaryLedgerController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('report_line_items', ReportLineItemController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('journal_entries', JournalEntryController::class);
 });
