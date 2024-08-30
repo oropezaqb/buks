@@ -13,6 +13,9 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ReportLineItemController;
 use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\SubsidiaryLedgerController;
+use App\Http\Controllers\QueryController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -44,5 +47,14 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('documents', DocumentController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('subsidiary_ledgers', SubsidiaryLedgerController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('report_line_items', ReportLineItemController::class)->middleware(CheckCurrentCompany::class);
-    Route::resource('journal_entries', JournalEntryController::class);
+    Route::resource('journal_entries', JournalEntryController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('suppliers', SupplierController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('products', ProductController::class)->middleware(CheckCurrentCompany::class);
+});
+
+Route::middleware(['auth', 'web'])->group(function () {
+    Route::resource('queries', QueryController::class)->middleware(CheckCurrentCompany::class);
+
+    Route::post('/queries/{query}/run', [QueryController::class, 'run'])
+      ->name('queries.run')->middleware(CheckCurrentCompany::class);
 });

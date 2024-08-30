@@ -9,6 +9,7 @@
     using http://phpmd.org/documentation/creating-a-ruleset.html
   </description>
   <!-- se importan los rulesets, en este caso todos. -->
+  <exclude-pattern>/var/www/html/buks/app/EPMADD/*</exclude-pattern>
   <rule ref="rulesets/cleancode.xml">
     <exclude name="StaticAccess"/>
   </rule>

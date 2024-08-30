@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
   <!-- Brand -->
-  <a class="navbar-brand" href="/dashboard"><x-application-logo class="logo block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />InnoBooks</a>
+  <a class="navbar-brand" href="/dashboard"><x-application-logo class="logo block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />Buks</a>
 
   <!-- Links -->
   <ul class="navbar-nav">
