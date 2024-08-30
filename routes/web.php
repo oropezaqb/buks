@@ -16,6 +16,10 @@ use App\Http\Controllers\SubsidiaryLedgerController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -50,6 +54,10 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('journal_entries', JournalEntryController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('suppliers', SupplierController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('products', ProductController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('bills', BillController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('purchases', PurchaseController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('customers', CustomerController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('invoices', InvoiceController::class)->middleware(CheckCurrentCompany::class);
 });
 
 Route::middleware(['auth', 'web'])->group(function () {

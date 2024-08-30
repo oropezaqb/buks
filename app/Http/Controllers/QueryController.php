@@ -8,6 +8,10 @@ use App\Models\Ability;
 use Illuminate\Support\Facades\Validator;
 use App\EPMADD\DbAccess;
 
+/**
+ * @SuppressWarnings("PMD.ShortVariableName")
+ */
+
 class QueryController extends Controller
 {
     public function index()
