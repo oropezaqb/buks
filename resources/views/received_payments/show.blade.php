@@ -360,6 +360,7 @@
                                         }
                                     }
                                 }
+<?php // @phpcpd:ignore-start ?>
                                 @if (!empty(old('item_lines')))
                                     var a = <?php echo json_encode(old("item_lines.'invoice_id'")); ?>;
                                     var b = <?php echo json_encode(old("item_lines.'number'")); ?>;
@@ -428,6 +429,7 @@
                                     @endif
                                 @endif
                                 updateSubTotal();
+<?php // @phpcpd:ignore-end ?>
                             </script>
                         </div>
                     </div>

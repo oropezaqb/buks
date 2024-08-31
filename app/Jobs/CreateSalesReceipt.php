@@ -13,6 +13,7 @@ use App\Models\Posting;
 use App\Models\SubsidiaryLedger;
 use App\Models\Transaction;
 use App\Models\SalesReceiptItemLine;
+use App\Jobs\CreateInvoice;
 
     /**
      * @SuppressWarnings(PHPMD.ElseExpression)
@@ -22,6 +23,7 @@ class CreateSalesReceipt
 {
     public function recordSales($salesReceipt, $input)
     {
+        $createInvoice = new CreateInvoice();
         $count = count($input['item_lines']["'product_id'"], 1);
         if ($count > 0) {
             for ($row = 0; $row < $count; $row++) {
@@ -30,11 +32,11 @@ class CreateSalesReceipt
                     $numberRecorded = 0;
                     do {
                         $company = \Auth::user()->currentCompany->company;
-                        $purchase = $this->determinePurchaseSold($company, $product);
+                        $purchase = $createInvoice->determinePurchaseSold($company, $product);
                         if (is_object($purchase)) {
                             $numberUnrecorded = $input['item_lines']["'quantity'"][$row] - $numberRecorded;
-                            $quantity = $this->determineQuantitySold($company, $purchase, $numberUnrecorded);
-                            $amount = $this->determineAmountSold($company, $purchase, $numberUnrecorded);
+                            $quantity = $createInvoice->determineQuantitySold($company, $purchase, $numberUnrecorded);
+                            $amount = $createInvoice->determineAmountSold($company, $purchase, $numberUnrecorded);
                             $sale = new Sale([
                                 'company_id' => $company->id,
                                 'purchase_id' => $purchase->id,
@@ -51,40 +53,6 @@ class CreateSalesReceipt
                     } while ($numberRecorded < $input['item_lines']["'quantity'"][$row]);
                 }
             }
-        }
-    }
-    public function determinePurchaseSold($company, $product)
-    {
-        $allPurchases = Purchase::where('company_id', $company->id)->where('product_id', $product->id)->get();
-        $purchases = $allPurchases->sortBy('date');
-        foreach ($purchases as $purchase) {
-            $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-            if ($numberSold < $purchase->quantity) {
-                return $purchase;
-            }
-        }
-    }
-    public function determineQuantitySold($company, $purchase, $numberUnrecorded)
-    {
-        $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-        $numberUnsold = $purchase->quantity - $numberSold;
-        if ($numberUnrecorded < $numberUnsold) {
-            return $numberUnrecorded;
-        } else {
-            return $numberUnsold;
-        }
-    }
-    public function determineAmountSold($company, $purchase, $numberUnrecorded)
-    {
-        $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-        $numberUnsold = $purchase->quantity - $numberSold;
-        $amountSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('amount');
-        $amountUnsold = $purchase->amount - $amountSold;
-        if ($numberUnrecorded < $numberUnsold) {
-            $costOfSales = round($amountUnsold / $numberUnsold * $numberUnrecorded, 2);
-            return $costOfSales;
-        } else {
-            return $amountUnsold;
         }
     }
     public function recordJournalEntry($salesReceipt, $input)
