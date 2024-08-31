@@ -22,6 +22,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SalesReceiptController;
 use App\Http\Controllers\ReceivedPaymentController;
+use App\Http\Controllers\AjaxController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -40,6 +41,19 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::middleware(['auth', 'web'])->group(function () {
+    Route::get('/suppliers/import', 'SupplierController@import')->name('suppliers.import')
+        ->middleware(CheckCurrentCompany::class);
+    Route::post('/suppliers/upload', 'SupplierController@upload')->name('suppliers.upload')
+        ->middleware(CheckCurrentCompany::class);
+    Route::get('/products/import', 'ProductController@import')->name('products.import')
+        ->middleware(CheckCurrentCompany::class);
+    Route::post('/products/upload', 'ProductController@upload')->name('products.upload')
+        ->middleware(CheckCurrentCompany::class);
+    Route::post('/received_payments/ajax-request', [AjaxController::class, 'store'])
+        ->middleware(CheckCurrentCompany::class);
+});
 
 Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('companies', CompanyController::class);
