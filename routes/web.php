@@ -20,6 +20,8 @@ use App\Http\Controllers\BillController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\SalesReceiptController;
+use App\Http\Controllers\ReceivedPaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -58,6 +60,8 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('purchases', PurchaseController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('customers', CustomerController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('invoices', InvoiceController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('sales_receipts', SalesReceiptController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('received_payments', ReceivedPaymentController::class)->middleware(CheckCurrentCompany::class);
 });
 
 Route::middleware(['auth', 'web'])->group(function () {
