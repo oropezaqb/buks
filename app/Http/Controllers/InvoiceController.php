@@ -88,7 +88,7 @@ class InvoiceController extends Controller
                 $createInvoice->updateLines($invoice);
                 $createInvoice->recordTransaction($invoice);
                 $updateSales = new UpdateSales();
-                $updateSales->updateSales(request('date'));
+                $updateSales->updateSales(request('date'), null);
 //                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
 //                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
 //                $createInvoice->updateSales($salesForUpdate);
@@ -153,7 +153,7 @@ class InvoiceController extends Controller
                 $createInvoice->deleteInvoiceDetails($invoice);
                 $createInvoice->updateLines($invoice);
                 $updateSales = new UpdateSales();
-                $updateSales->updateSales($changeDate);
+                $updateSales->updateSales($changeDate, null);
             });
             return redirect(route('invoices.show', [$invoice]))
                 ->with('status', 'Invoice updated!');
@@ -168,7 +168,7 @@ class InvoiceController extends Controller
                 $invoiceDate = $invoice->date;
                 $invoice->delete();
                 $updateSales = new UpdateSales();
-                $updateSales->updateSales($invoiceDate);
+                $updateSales->updateSales($invoiceDate, null);
 //                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
 //                    ->where('date', '>=', $invoiceDate)->orderBy('date', 'asc')->get();
 //                $createInvoice = new CreateInvoice();

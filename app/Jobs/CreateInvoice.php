@@ -87,11 +87,10 @@ class CreateInvoice
             return $amountUnsold;
         }
     }
-    public function recordJournalEntry($invoice, $input)
+    public function recordJournalEntry($invoice, $input, $account, $document, $explanation)
     {
         $company = \Auth::user()->currentCompany->company;
-        $document = Document::firstOrCreate(['name' => 'Invoice', 'company_id' => $company->id]);
-        $receivableAccount = Account::where('title', 'Accounts Receivable')->firstOrFail();
+        $receivableAccount = $account;
         $taxAccount = Account::where('title', 'Output VAT')->firstOrFail();
         $customer = Customer::all()->find($input['customer_id']);
         $receivableSubsidiary = SubsidiaryLedger::where('name', $customer->name)
@@ -100,8 +99,8 @@ class CreateInvoice
             'company_id' => $company->id,
             'date' => $input['date'],
             'document_type_id' => $document->id,
-            'document_number' => $input['invoice_number'],
-            'explanation' => 'To record sale of goods on account.'
+            'document_number' => $invoice->number,
+            'explanation' => $explanation
         ]);
         $invoice->journalEntry()->save($journalEntry);
         $receivableAmount = 0;

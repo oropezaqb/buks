@@ -72,7 +72,7 @@ class SalesReceiptController extends Controller
     }
     public function store(StoreSalesReceipt $request)
     {
-        try {
+//        try {
             \DB::transaction(function () use ($request) {
                 $company = \Auth::user()->currentCompany->company;
                 $salesReceipt = new SalesReceipt([
@@ -94,9 +94,9 @@ class SalesReceiptController extends Controller
 //                $createSalesReceipt->updateSales($salesForUpdate);
             });
             return redirect(route('sales_receipts.index'));
-        } catch (\Exception $e) {
-            return back()->with('status', $this->translateError($e))->withInput();
-        }
+//        } catch (\Exception $e) {
+//            return back()->with('status', $this->translateError($e))->withInput();
+//        }
     }
     public function translateError($e)
     {

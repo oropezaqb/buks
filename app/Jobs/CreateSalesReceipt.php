@@ -55,87 +55,12 @@ class CreateSalesReceipt
             }
         }
     }
-    public function recordJournalEntry($salesReceipt, $input)
-    {
-        $company = \Auth::user()->currentCompany->company;
-        $document = Document::firstOrCreate(['name' => 'Sales Receipt', 'company_id' => $company->id]);
-        $receivableAccount = Account::all()->find($input['account_id']);
-        $taxAccount = Account::where('title', 'Output VAT')->firstOrFail();
-        $journalEntry = new JournalEntry([
-            'company_id' => $company->id,
-            'date' => $input['date'],
-            'document_type_id' => $document->id,
-            'document_number' => $input['number'],
-            'explanation' => 'To record sale of goods for cash.'
-        ]);
-        $salesReceipt->journalEntry()->save($journalEntry);
-        $receivableAmount = 0;
-        $taxAmount = 0;
-        $count = count($input['item_lines']["'product_id'"]);
-        if ($count > 0) {
-            for ($row = 0; $row < $count; $row++) {
-                $inputTax = 0;
-                if (!is_null($input['item_lines']["'output_tax'"][$row])) {
-                    $inputTax = $input['item_lines']["'output_tax'"][$row];
-                }
-                $product = Product::find($input['item_lines']["'product_id'"][$row]);
-                $debit = -$input['item_lines']["'amount'"][$row];
-                $posting = new Posting([
-                    'company_id' => $company->id,
-                    'journal_entry_id' => $journalEntry->id,
-                    'account_id' => $product->incomeAccount->id,
-                    'debit' => $debit
-                ]);
-                $posting->save();
-                $receivableAmount += $input['item_lines']["'amount'"][$row] + $inputTax;
-                $taxAmount -= $inputTax;
-            }
-        }
-        if ($taxAmount != 0) {
-            $posting = new Posting([
-                'company_id' => $company->id,
-                'journal_entry_id' => $journalEntry->id,
-                'account_id' => $taxAccount->id,
-                'debit' => $taxAmount
-            ]);
-            $posting->save();
-        }
-        $posting = new Posting([
-            'company_id' => $company->id,
-            'journal_entry_id' => $journalEntry->id,
-            'account_id' => $receivableAccount->id,
-            'debit' => $receivableAmount
-        ]);
-        $posting->save();
-        $this->recordCost($salesReceipt, $company, $journalEntry);
-    }
-    public function recordCost($salesReceipt, $company, $journalEntry)
-    {
-        foreach ($salesReceipt->sales as $sale) {
-            $product = Product::find($sale->product_id);
-            $posting = new Posting([
-                'company_id' => $company->id,
-                'journal_entry_id' => $journalEntry->id,
-                'account_id' => $product->expenseAccount->id,
-                'debit' => $sale->amount
-            ]);
-            $posting->save();
-            $debit = -$sale->amount;
-            $inventoryPosting = new Posting([
-                'company_id' => $company->id,
-                'journal_entry_id' => $journalEntry->id,
-                'account_id' => $product->inventoryAccount->id,
-                'debit' => $debit
-            ]);
-            $inventoryPosting->save();
-        }
-    }
     public function recordTransaction($salesReceipt)
     {
         $company = \Auth::user()->currentCompany->company;
         $transaction = new Transaction([
             'company_id' => $company->id,
-            'type' => 'sale',
+            'type' => 'sales_receipt',
             'date' => request('date')
         ]);
         $salesReceipt->transaction()->save($transaction);

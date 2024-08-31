@@ -63,7 +63,7 @@
                                             <option data-value="{{ $account->id }}">{{ $account->title }}</option>
                                         @endforeach
                                     </datalist>
-                                    <input type="hidden" name="account_id" id="account_id0-hidden" value="{!! old('account_id', $salesReceipt->customer_id) !!}">
+                                    <input type="hidden" name="account_id" id="account_id0-hidden" value="{!! old('account_id', $salesReceipt->account_id) !!}">
                                     <input type="hidden" name="account_name" id="name-account_id0-hidden" value="{!! old('account_name', $salesReceipt->account->title) !!}">
                                 </div>
                                 <br><br>
