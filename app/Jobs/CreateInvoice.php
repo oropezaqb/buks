@@ -176,6 +176,7 @@ class CreateInvoice
         ]);
         $invoice->transaction()->save($transaction);
     }
+/*
     public function updateSales($salesForUpdate)
     {
         foreach ($salesForUpdate as $saleForUpdate) {
@@ -217,6 +218,7 @@ class CreateInvoice
             $createInvoice->recordJournalEntry($invoice, $input);
         }
     }
+*/
     public function updateLines($invoice)
     {
         if (!is_null(request("item_lines.'product_id'"))) {

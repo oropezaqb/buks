@@ -21,6 +21,7 @@ use App\Models\Posting;
 use App\Models\SubsidiaryLedger;
 use DB;
 use App\Models\Transaction;
+use App\Jobs\UpdateSales;
 
     /**
      * @SuppressWarnings(PHPMD.ElseExpression)
@@ -93,10 +94,12 @@ class BillController extends Controller
                 $createBill->updateLines($bill);
                 $createBill->recordJournalEntry($bill);
                 $createBill->recordPurchases($bill);
-                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', request('bill_date'))->orderBy('date', 'asc')->get();
-                $createInvoice = new CreateInvoice();
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales(request('bill_date'));
+//                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
+//                    ->where('date', '>=', request('bill_date'))->orderBy('date', 'asc')->get();
+//                $createInvoice = new CreateInvoice();
+//                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('bills.index'));
         } catch (\Exception $e) {
@@ -154,16 +157,18 @@ class BillController extends Controller
                 if ($oldDate < $newDate) {
                     $changeDate = $oldDate;
                 }
-                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', $changeDate)->orderBy('date', 'asc')->get();
+//                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
+//                    ->where('date', '>=', $changeDate)->orderBy('date', 'asc')->get();
                 $bill->journalEntry()->delete();
                 $createBill = new CreateBill();
                 $createBill->deleteBillDetails($bill);
                 $createBill->updateLines($bill);
                 $createBill->recordJournalEntry($bill);
                 $createBill->recordPurchases($bill);
-                $createInvoice = new CreateInvoice();
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales($changeDate);
+//                $createInvoice = new CreateInvoice();
+//                $createInvoice->updateSales($salesForUpdate);
             });
 //            return view(
 //                'bills.show',
@@ -179,13 +184,14 @@ class BillController extends Controller
     {
         try {
             \DB::transaction(function () use ($bill) {
-                $company = \Auth::user()->currentCompany->company;
                 $billDate = $bill->bill_date;
                 $bill->delete();
-                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', $billDate)->orderBy('date', 'asc')->get();
-                $createInvoice = new CreateInvoice();
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales($billDate);
+//                $salesForUpdate = DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
+//                    ->where('date', '>=', $billDate)->orderBy('date', 'asc')->get();
+//                $createInvoice = new CreateInvoice();
+//                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('bills.index'));
         } catch (\Exception $e) {

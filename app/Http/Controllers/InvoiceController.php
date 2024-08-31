@@ -15,6 +15,7 @@ use App\Models\Purchase;
 use App\Models\Sale;
 use App\Jobs\CreateInvoice;
 use App\Models\Transaction;
+use App\Jobs\UpdateSales;
 
     /**
      * @SuppressWarnings(PHPMD.ElseExpression)
@@ -86,9 +87,11 @@ class InvoiceController extends Controller
                 $createInvoice = new CreateInvoice();
                 $createInvoice->updateLines($invoice);
                 $createInvoice->recordTransaction($invoice);
-                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales(request('date'));
+//                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
+//                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
+//                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('invoices.index'));
         } catch (\Exception $e) {
@@ -145,13 +148,12 @@ class InvoiceController extends Controller
                 if ($oldDate < $newDate) {
                     $changeDate = $oldDate;
                 }
-                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', $changeDate)->orderBy('date', 'asc')->get();
                 $invoice->journalEntry->delete();
                 $createInvoice = new CreateInvoice();
                 $createInvoice->deleteInvoiceDetails($invoice);
                 $createInvoice->updateLines($invoice);
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales($changeDate);
             });
             return redirect(route('invoices.show', [$invoice]))
                 ->with('status', 'Invoice updated!');
@@ -163,13 +165,14 @@ class InvoiceController extends Controller
     {
         try {
             \DB::transaction(function () use ($invoice) {
-                $company = \Auth::user()->currentCompany->company;
                 $invoiceDate = $invoice->date;
                 $invoice->delete();
-                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
-                    ->where('date', '>=', $invoiceDate)->orderBy('date', 'asc')->get();
-                $createInvoice = new CreateInvoice();
-                $createInvoice->updateSales($salesForUpdate);
+                $updateSales = new UpdateSales();
+                $updateSales->updateSales($invoiceDate);
+//                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
+//                    ->where('date', '>=', $invoiceDate)->orderBy('date', 'asc')->get();
+//                $createInvoice = new CreateInvoice();
+//                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('invoices.index'));
         } catch (\Exception $e) {
