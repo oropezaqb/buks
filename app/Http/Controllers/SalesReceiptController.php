@@ -173,7 +173,7 @@ class SalesReceiptController extends Controller
                 $salesReceiptDate = $salesReceipt->date;
                 $salesReceipt->delete();
                 $updateSales = new UpdateSales();
-                $updateSales->updateSales($invoiceDate);
+                $updateSales->updateSales($salesReceiptDate);
 //                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
 //                    ->where('date', '>=', $salesReceiptDate)->orderBy('date', 'asc')->get();
 //                $createSalesReceipt = new CreateSalesReceipt();

@@ -58,31 +58,32 @@ class ReceivedPaymentController extends Controller
     {
         try {
             \DB::transaction(function () use ($request) {
-        $company = \Auth::user()->currentCompany->company;
-        $receivedPayment = new ReceivedPayment([
-            'company_id' => $company->id,
-            'date' => request('date'),
-            'customer_id' => request('customer_id'),
-            'number' => request('number'),
-            'account_id' => request('account_id')
-        ]);
-        $receivedPayment->save();
-        if (!is_null(request("item_lines.'invoice_id'"))) {
-            $count = count(request("item_lines.'invoice_id'"));
-            for ($row = 0; $row < $count; $row++) {
-                if (is_numeric(request("item_lines.'payment'.".$row)) && request("item_lines.'payment'.".$row) > 0) {
-                    $receivedPaymentLine = new ReceivedPaymentLine([
-                        'company_id' => $company->id,
-                        'received_payment_id' => $receivedPayment->id,
-                        'invoice_id' => request("item_lines.'invoice_id'.".$row),
-                        'amount' => request("item_lines.'payment'.".$row)
-                    ]);
-                    $receivedPaymentLine->save();
+                $company = \Auth::user()->currentCompany->company;
+                $receivedPayment = new ReceivedPayment([
+                'company_id' => $company->id,
+                'date' => request('date'),
+                'customer_id' => request('customer_id'),
+                'number' => request('number'),
+                'account_id' => request('account_id')
+                ]);
+                $receivedPayment->save();
+                if (!is_null(request("item_lines.'invoice_id'"))) {
+                    $count = count(request("item_lines.'invoice_id'"));
+                    for ($row = 0; $row < $count; $row++) {
+                        if (is_numeric(request("item_lines.'payment'.".$row))
+                            && request("item_lines.'payment'.".$row) > 0) {
+                            $receivedPaymentLine = new ReceivedPaymentLine([
+                                'company_id' => $company->id,
+                                'received_payment_id' => $receivedPayment->id,
+                                'invoice_id' => request("item_lines.'invoice_id'.".$row),
+                                'amount' => request("item_lines.'payment'.".$row)
+                            ]);
+                            $receivedPaymentLine->save();
+                        }
+                    }
                 }
-            }
-        }
-        $createRecvPayment = new CreateReceivedPayment();
-        $createRecvPayment->recordJournalEntry($receivedPayment);
+                $createRecvPayment = new CreateReceivedPayment();
+                $createRecvPayment->recordJournalEntry($receivedPayment);
             });
             return redirect(route('received_payments.index'));
         } catch (\Exception $e) {
@@ -116,7 +117,8 @@ class ReceivedPaymentController extends Controller
         foreach ($invoices as $invoice) {
             $amountReceivable = $invoice->itemLines->sum('amount') + $invoice->itemLines->sum('output_tax');
             $totalAmountPaid = \DB::table('received_payment_lines')->where('invoice_id', $invoice->id)->sum('amount');
-            $receivedPaymentTotalAmount = \DB::table('received_payment_lines')->where('received_payment_id', $receivedPayment->id)->sum('amount');
+            $receivedPaymentTotalAmount = \DB::table('received_payment_lines')
+                ->where('received_payment_id', $receivedPayment->id)->sum('amount');
             $balance = $amountReceivable - ($totalAmountPaid - $receivedPaymentTotalAmount);
             if ($balance > 0 && !in_array($invoice->id, $recvPaymentInv)) {
                 $unpaidInvoicesIds[] = array(
