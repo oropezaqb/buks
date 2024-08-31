@@ -48,12 +48,13 @@ class UpdateSales
                 $createInvoice = new CreateInvoice();
                 $createInvoice->recordSales($invoice, $input);
                 $account = Account::where('title', 'Accounts Receivable')->firstOrFail();
-                $document = Document::firstOrCreate('name', 'Invoice');
+                $document = Document::firstOrCreate(['name' => 'Invoice'], ['company_id' => $company->id]);
                 $createInvoice->recordJournalEntry(
                     $invoice,
                     $input,
                     $account,
                     $document,
+                    $invoice->invoice_number,
                     "To record sale of goods on account."
                 );
             }
@@ -80,6 +81,7 @@ class UpdateSales
                     $input,
                     $salesReceipt->account,
                     $document,
+                    $salesReceipt->number,
                     "To record sale of goods for cash."
                 );
             }

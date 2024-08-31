@@ -87,7 +87,7 @@ class CreateInvoice
             return $amountUnsold;
         }
     }
-    public function recordJournalEntry($invoice, $input, $account, $document, $explanation)
+    public function recordJournalEntry($invoice, $input, $account, $document, $documentNumber, $explanation)
     {
         $company = \Auth::user()->currentCompany->company;
         $receivableAccount = $account;
@@ -99,7 +99,7 @@ class CreateInvoice
             'company_id' => $company->id,
             'date' => $input['date'],
             'document_type_id' => $document->id,
-            'document_number' => $invoice->number,
+            'document_number' => $documentNumber,
             'explanation' => $explanation
         ]);
         $invoice->journalEntry()->save($journalEntry);

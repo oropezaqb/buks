@@ -48,6 +48,7 @@ class CreateBill
             'company_id' => $company->id,
             'date' => request('bill_date'),
             'document_type_id' => $document->id,
+            'document_number' => $bill->bill_number,
             'explanation' => 'To record purchase of goods on account.'
         ]);
         $bill->journalEntry()->save($journalEntry);
