@@ -9,7 +9,7 @@ class CreditNote extends Model
     protected $guarded = [];
     public function path()
     {
-        return route('creditnote.show', $this);
+        return route('credit_notes.show', $this);
     }
     public function lines()
     {

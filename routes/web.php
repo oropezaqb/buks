@@ -23,6 +23,8 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SalesReceiptController;
 use App\Http\Controllers\ReceivedPaymentController;
 use App\Http\Controllers\AjaxController;
+use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\AjaxCNController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;
 
@@ -53,6 +55,10 @@ Route::middleware(['auth', 'web'])->group(function () {
         ->middleware(CheckCurrentCompany::class);
     Route::post('/received_payments/ajax-request', [AjaxController::class, 'store'])
         ->middleware(CheckCurrentCompany::class);
+    Route::post('/credit_notes/getinvoice', [AjaxCNController::class, 'getInvoice'])
+        ->middleware(CheckCurrentCompany::class);
+    Route::post('/credit_notes/getamounts', [AjaxCNController::class, 'getAmounts'])
+        ->middleware(CheckCurrentCompany::class);
 });
 
 Route::middleware(['auth', 'web'])->group(function () {
@@ -76,6 +82,7 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::resource('invoices', InvoiceController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('sales_receipts', SalesReceiptController::class)->middleware(CheckCurrentCompany::class);
     Route::resource('received_payments', ReceivedPaymentController::class)->middleware(CheckCurrentCompany::class);
+    Route::resource('credit_notes', CreditNoteController::class)->middleware(CheckCurrentCompany::class);
 });
 
 Route::middleware(['auth', 'web'])->group(function () {
