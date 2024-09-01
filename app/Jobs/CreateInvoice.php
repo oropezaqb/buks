@@ -87,8 +87,15 @@ class CreateInvoice
             return $amountUnsold;
         }
     }
-    public function recordJournalEntry($invoice, $input, $account, $document, $documentNumber, $explanation)
-    {
+    public function recordJournalEntry(
+        $invoice,
+        $input,
+        $account,
+        $document,
+        $documentNumber,
+        $explanation,
+        $multiplier
+    ) {
         $company = \Auth::user()->currentCompany->company;
         $receivableAccount = $account;
         $taxAccount = Account::where('title', 'Output VAT')->firstOrFail();
@@ -113,7 +120,7 @@ class CreateInvoice
                     $inputTax = $input['item_lines']["'output_tax'"][$row];
                 }
                 $product = Product::find($input['item_lines']["'product_id'"][$row]);
-                $debit = -$input['item_lines']["'amount'"][$row];
+                $debit = -$input['item_lines']["'amount'"][$row] * $multiplier;
                 $posting = new Posting([
                     'company_id' => $company->id,
                     'journal_entry_id' => $journalEntry->id,
@@ -121,8 +128,10 @@ class CreateInvoice
                     'debit' => $debit
                 ]);
                 $posting->save();
-                $receivableAmount += $input['item_lines']["'amount'"][$row] + $inputTax;
-                $taxAmount -= $inputTax;
+                $receivableAmount += ($input['item_lines']["'amount'"][$row] + $inputTax) * $multiplier;
+                ;
+                $taxAmount -= $inputTax * $multiplier;
+                ;
             }
         }
         if ($taxAmount != 0) {
@@ -142,20 +151,24 @@ class CreateInvoice
             'subsidiary_ledger_id' => $receivableSubsidiary->id
         ]);
         $posting->save();
-        $this->recordCost($invoice, $company, $journalEntry);
+        $this->recordCost($invoice, $company, $journalEntry, $multiplier);
     }
-    public function recordCost($invoice, $company, $journalEntry)
+    public function recordCost($invoice, $company, $journalEntry, $multiplier)
     {
+        if ($multiplier == '-1') {
+            $invoice = $invoice->invoice;
+        }
         foreach ($invoice->sales as $sale) {
             $product = Product::find($sale->product_id);
+            $debit = $sale->amount * $multiplier;
             $posting = new Posting([
                 'company_id' => $company->id,
                 'journal_entry_id' => $journalEntry->id,
                 'account_id' => $product->expenseAccount->id,
-                'debit' => $sale->amount
+                'debit' => $debit
             ]);
             $posting->save();
-            $debit = -$sale->amount;
+            $debit *= $multiplier;
             $inventoryPosting = new Posting([
                 'company_id' => $company->id,
                 'journal_entry_id' => $journalEntry->id,

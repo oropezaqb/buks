@@ -55,7 +55,8 @@ class UpdateSales
                     $account,
                     $document,
                     $invoice->invoice_number,
-                    "To record sale of goods on account."
+                    "To record sale of goods on account.",
+                    1
                 );
             }
             if ($transaction->type == 'sales_receipt') {
@@ -82,29 +83,12 @@ class UpdateSales
                     $salesReceipt->account,
                     $document,
                     $salesReceipt->number,
-                    "To record sale of goods for cash."
+                    "To record sale of goods for cash.",
+                    1
                 );
             }
             if ($transaction->type == 'sales_return') {
-                $creditNote = $transaction->transactable;
-                $input = array();
-                $row = 0;
-                $input['customer_id'] = $creditNote->invoice->customer_id;
-                $input['date'] = $creditNote->date;
-                $input['number'] = $creditNote->number;
-                foreach ($creditNote->lines as $itemLine) {
-                    $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
-                    $input['item_lines']["'description'"][$row] = $itemLine->description;
-                    $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
-                    $input['item_lines']["'amount'"][$row] = $itemLine->amount;
-                    $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
-                    $row += 1;
-                }
-                $recordSalesReturn = new RecordSalesReturn();
-                $recordSalesReturn->record($creditNote, $input);
-                $createInvoice = new CreateCreditNote();
-                $createInvoice->recordJournalEntry($creditNote, $input);
-                $createInvoice->recordPurchases($creditNote);
+                $this->recordSalesReturn($transaction);
             }
             if ($transaction->type == 'inventory_qty_adj') {
                 $inventoryQtyAdj = $transaction->transactable;
@@ -115,6 +99,40 @@ class UpdateSales
                 $createInventoryQtyAdj->recordJournalEntry($inventoryQtyAdj);
             }
         }
+    }
+    public function recordSalesReturn($transaction)
+    {
+                $creditNote = $transaction->transactable;
+                $input = array();
+                $row = 0;
+                $input['customer_id'] = $creditNote->invoice->customer_id;
+                $input['date'] = $creditNote->date;
+                $input['number'] = $creditNote->number;
+        foreach ($creditNote->lines as $itemLine) {
+            $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
+            $input['item_lines']["'description'"][$row] = $itemLine->description;
+            $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
+            $input['item_lines']["'amount'"][$row] = $itemLine->amount;
+            $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
+            $row += 1;
+        }
+                $recordSalesReturn = new RecordSalesReturn();
+                $recordSalesReturn->record($creditNote, $input);
+                $account = Account::where('title', 'Accounts Receivable')->firstOrFail();
+                $company = \Auth::user()->currentCompany->company;
+                $document = Document::firstOrCreate(['name' => 'Credit Note'], ['company_id' => $company->id]);
+                $createInvoice = new CreateInvoice();
+                $createInvoice->recordJournalEntry(
+                    $creditNote,
+                    $input,
+                    $account,
+                    $document,
+                    $creditNote->number,
+                    "To record return of goods from a customer.",
+                    -1
+                );
+                $createCreditNote = new CreateCreditNote();
+                $createCreditNote->recordPurchases($creditNote);
     }
     public function deleteJournalEntries($salesForUpdate)
     {

@@ -68,7 +68,7 @@ class CreditNoteController extends Controller
     }
     public function store(StoreCreditNote $request)
     {
-        try {
+//        try {
             \DB::transaction(function () use ($request) {
                 $company = \Auth::user()->currentCompany->company;
                 $creditNote = new CreditNote([
@@ -87,9 +87,9 @@ class CreditNoteController extends Controller
                 $updateSales->updateSales(request('date'));
             });
             return redirect(route('credit_notes.index'));
-        } catch (\Exception $e) {
-            return back()->with('status', $this->translateError($e))->withInput();
-        }
+//        } catch (\Exception $e) {
+//            return back()->with('status', $this->translateError($e))->withInput();
+//        }
     }
     public function translateError($e)
     {
