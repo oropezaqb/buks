@@ -76,20 +76,21 @@ class UpdateSales
     }
     public function recordSales($transaction)
     {
+        $company = \Auth::user()->currentCompany->company;
                 $invoice = $transaction->transactable;
                 $input = array();
                 $row = 0;
                 $input['customer_id'] = $invoice->customer_id;
                 $input['date'] = $invoice->date;
                 $input['invoice_number'] = $invoice->invoice_number;
-                foreach ($invoice->itemLines as $itemLine) {
-                    $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
-                    $input['item_lines']["'description'"][$row] = $itemLine->description;
-                    $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
-                    $input['item_lines']["'amount'"][$row] = $itemLine->amount;
-                    $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
-                    $row += 1;
-                }
+        foreach ($invoice->itemLines as $itemLine) {
+            $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
+            $input['item_lines']["'description'"][$row] = $itemLine->description;
+            $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
+            $input['item_lines']["'amount'"][$row] = $itemLine->amount;
+            $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
+            $row += 1;
+        }
                 $createInvoice = new CreateInvoice();
                 $createInvoice->recordSales($invoice, $input);
                 $account = Account::where('title', 'Accounts Receivable')->firstOrFail();

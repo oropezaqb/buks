@@ -23,10 +23,10 @@ class CreateBill
                 $product = Product::find(request("item_lines.'product_id'.".$row));
                 if ($product->track_quantity) {
                     $company = \Auth::user()->currentCompany->company;
-                    $quantityReturned = $document->purchaseReturns
+                    $quantityReturned = $bill->purchaseReturns
                         ->where('product_id', $product->id)->sum('quantity');
                     $quantity = request("item_lines.'quantity'.".$row) - $quantityReturned;
-                    $amountReturned = $document->purchaseReturns
+                    $amountReturned = $bill->purchaseReturns
                         ->where('product_id', $product->id)->sum('amount');
                     $amount = request("item_lines.'amount'.".$row) - $amountReturned;
                     $purchase = new Purchase([

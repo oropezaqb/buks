@@ -79,7 +79,7 @@ class BillController extends Controller
     }
     public function store(StoreBill $request)
     {
-        try {
+//        try {
             \DB::transaction(function () use ($request) {
                 $company = \Auth::user()->currentCompany->company;
                 $bill = new Bill([
@@ -102,9 +102,9 @@ class BillController extends Controller
 //                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('bills.index'));
-        } catch (\Exception $e) {
-            return back()->with('status', $this->translateError($e))->withInput();
-        }
+//        } catch (\Exception $e) {
+//            return back()->with('status', $this->translateError($e))->withInput();
+//        }
     }
     public function translateError($e)
     {

@@ -154,8 +154,7 @@ class CreateInvoice
         if ($multiplier == '-1') {
             $createCreditNote = new CreateCreditNote();
             $createCreditNote->recordCost($invoice, $company, $journalEntry);
-        }
-        else {
+        } else {
             $this->recordCost($invoice, $company, $journalEntry, $multiplier);
         }
     }
