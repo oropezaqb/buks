@@ -23,12 +23,18 @@ class CreateBill
                 $product = Product::find(request("item_lines.'product_id'.".$row));
                 if ($product->track_quantity) {
                     $company = \Auth::user()->currentCompany->company;
+                    $quantityReturned = $document->purchaseReturns
+                        ->where('product_id', $product->id)->sum('quantity');
+                    $quantity = request("item_lines.'quantity'.".$row) - $quantityReturned;
+                    $amountReturned = $document->purchaseReturns
+                        ->where('product_id', $product->id)->sum('amount');
+                    $amount = request("item_lines.'amount'.".$row) - $amountReturned;
                     $purchase = new Purchase([
                         'company_id' => $company->id,
                         'date' => request('bill_date'),
                         'product_id' => request("item_lines.'product_id'.".$row),
-                        'quantity' => request("item_lines.'quantity'.".$row),
-                        'amount' => request("item_lines.'amount'.".$row)
+                        'quantity' => $quantity,
+                        'amount' => $amount
                     ]);
                     $bill->purchases()->save($purchase);
                 }
@@ -158,5 +164,15 @@ class CreateBill
                 $itemLine->save();
             }
         }
+    }
+    public function recordTransaction($bill)
+    {
+        $company = \Auth::user()->currentCompany->company;
+        $transaction = new Transaction([
+            'company_id' => $company->id,
+            'type' => 'purchase',
+            'date' => request('date')
+        ]);
+        $bill->transaction()->save($transaction);
     }
 }

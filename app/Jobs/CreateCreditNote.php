@@ -209,7 +209,7 @@ class CreateCreditNote
     }
     public function recordPurchases($creditNote)
     {
-        $salesReturns = $creditNote->lines;
+        $salesReturns = $creditNote->salesReturn;
         if (!is_null($salesReturns)) {
             foreach ($salesReturns as $salesReturn) {
                 $product = Product::find($salesReturn->product_id);
@@ -217,7 +217,7 @@ class CreateCreditNote
                     $company = \Auth::user()->currentCompany->company;
                     $purchase = new Purchase([
                         'company_id' => $company->id,
-                        'date' => $creditNote->date,
+                        'date' => $salesReturn->date,
                         'product_id' => $salesReturn->product_id,
                         'quantity' => $salesReturn->quantity,
                         'amount' => $salesReturn->amount

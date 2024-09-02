@@ -31,33 +31,7 @@ class UpdateSales
             $transactions = Transaction::all();
             $transaction = $transactions->find($saleForUpdate->id);
             if ($transaction->type == 'sale') {
-                $invoice = $transaction->transactable;
-                $input = array();
-                $row = 0;
-                $input['customer_id'] = $invoice->customer_id;
-                $input['date'] = $invoice->date;
-                $input['invoice_number'] = $invoice->invoice_number;
-                foreach ($invoice->itemLines as $itemLine) {
-                    $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
-                    $input['item_lines']["'description'"][$row] = $itemLine->description;
-                    $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
-                    $input['item_lines']["'amount'"][$row] = $itemLine->amount;
-                    $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
-                    $row += 1;
-                }
-                $createInvoice = new CreateInvoice();
-                $createInvoice->recordSales($invoice, $input);
-                $account = Account::where('title', 'Accounts Receivable')->firstOrFail();
-                $document = Document::firstOrCreate(['name' => 'Invoice'], ['company_id' => $company->id]);
-                $createInvoice->recordJournalEntry(
-                    $invoice,
-                    $input,
-                    $account,
-                    $document,
-                    $invoice->invoice_number,
-                    "To record sale of goods on account.",
-                    1
-                );
+                $this->recordSale($transaction);
             }
             if ($transaction->type == 'sales_receipt') {
                 $salesReceipt = $transaction->transactable;
@@ -99,6 +73,36 @@ class UpdateSales
                 $createInventoryQtyAdj->recordJournalEntry($inventoryQtyAdj);
             }
         }
+    }
+    public function recordSales($transaction)
+    {
+                $invoice = $transaction->transactable;
+                $input = array();
+                $row = 0;
+                $input['customer_id'] = $invoice->customer_id;
+                $input['date'] = $invoice->date;
+                $input['invoice_number'] = $invoice->invoice_number;
+                foreach ($invoice->itemLines as $itemLine) {
+                    $input['item_lines']["'product_id'"][$row] = $itemLine->product_id;
+                    $input['item_lines']["'description'"][$row] = $itemLine->description;
+                    $input['item_lines']["'quantity'"][$row] = $itemLine->quantity;
+                    $input['item_lines']["'amount'"][$row] = $itemLine->amount;
+                    $input['item_lines']["'output_tax'"][$row] = $itemLine->output_tax;
+                    $row += 1;
+                }
+                $createInvoice = new CreateInvoice();
+                $createInvoice->recordSales($invoice, $input);
+                $account = Account::where('title', 'Accounts Receivable')->firstOrFail();
+                $document = Document::firstOrCreate(['name' => 'Invoice'], ['company_id' => $company->id]);
+                $createInvoice->recordJournalEntry(
+                    $invoice,
+                    $input,
+                    $account,
+                    $document,
+                    $invoice->invoice_number,
+                    "To record sale of goods on account.",
+                    1
+                );
     }
     public function recordSalesReturn($transaction)
     {

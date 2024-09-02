@@ -151,7 +151,13 @@ class CreateInvoice
             'subsidiary_ledger_id' => $receivableSubsidiary->id
         ]);
         $posting->save();
-        $this->recordCost($invoice, $company, $journalEntry, $multiplier);
+        if ($multiplier == '-1') {
+            $createCreditNote = new CreateCreditNote();
+            $createCreditNote->recordCost($invoice, $company, $journalEntry);
+        }
+        else {
+            $this->recordCost($invoice, $company, $journalEntry, $multiplier);
+        }
     }
     public function recordCost($invoice, $company, $journalEntry, $multiplier)
     {
@@ -168,12 +174,12 @@ class CreateInvoice
                 'debit' => $debit
             ]);
             $posting->save();
-            $debit *= $multiplier;
+            $credit = -$debit;
             $inventoryPosting = new Posting([
                 'company_id' => $company->id,
                 'journal_entry_id' => $journalEntry->id,
                 'account_id' => $product->inventoryAccount->id,
-                'debit' => $debit
+                'debit' => $credit
             ]);
             $inventoryPosting->save();
         }

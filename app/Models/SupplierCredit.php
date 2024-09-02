@@ -9,7 +9,7 @@ class SupplierCredit extends Model
     protected $guarded = [];
     public function path()
     {
-        return route('suppliercredit.show', $this);
+        return route('supplier_credits.show', $this);
     }
     public function clines()
     {
