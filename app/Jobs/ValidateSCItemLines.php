@@ -20,6 +20,7 @@ class ValidateSCItemLines
     {
         $count = count(request("item_lines.'product_id'"));
         global $productQuantity;
+        $exists = Bill::where('supplier_id', request('supplier_id'))->where('bill_number', request('number'))->exists();
         for ($row = 0; $row < $count; $row++) {
             $productQuantity[request("item_lines.'product_id'.".$row)] = 0;
         }
@@ -37,7 +38,9 @@ class ValidateSCItemLines
             $this->validateItemAmount($validator, $row, $productExists);
             $this->validateItemTax($validator, $row, $productExists);
         }
-        $this->valProdQuanti($validator, $count);
+        if ($exists) {
+            $this->valProdQuanti($validator, $count);
+        }
         return $thereIsAmount;
     }
     public function validateItemQuantity($validator, $row)
@@ -69,13 +72,13 @@ class ValidateSCItemLines
         if (!is_null(request('supplier_credit_id'))) {
             $supplierCreditId = request('supplier_credit_id');
         }
-        $itemAmounts = $createSupplierCredit->determineAmounts(
-            request("purchasable_doc"),
-            request("doc_id"),
-            request("item_lines.'product_id'.".$row),
-            request("item_lines.'quantity'.".$row),
-            $supplierCreditId
-        );
+            $itemAmounts = $createSupplierCredit->determineAmounts(
+                request("purchasable_doc"),
+                request("doc_id"),
+                request("item_lines.'product_id'.".$row),
+                request("item_lines.'quantity'.".$row),
+                $supplierCreditId
+            );
         if (is_null(request("item_lines.'amount'.".$row))) {
             $this->checkIfProvided($validator, request("item_lines.'quantity'.".$row), $row);
         } else {

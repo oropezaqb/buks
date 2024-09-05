@@ -31,7 +31,6 @@ class StoreSupplierCredit extends FormRequest
     {
         return [
             'purchasable_doc.required' => 'The document type is required.',
-            'doc_id.required' => 'The document number is required.',
             'number.min' => 'The Supplier Credit number must be positive.',
             "category_lines.'account_id'.*.exists" =>
                 'Some account titles are invalid.',
@@ -49,7 +48,6 @@ class StoreSupplierCredit extends FormRequest
     {
         return [
             'purchasable_doc' => ['required'],
-            'doc_id' => ['required'],
             'date' => ['required', 'date'],
             'number' => ['required', 'numeric', 'min:1'],
             "category_lines.'account_id'.*" => [

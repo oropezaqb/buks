@@ -12,6 +12,7 @@ use App\Models\Posting;
 use App\Models\SubsidiaryLedger;
 use App\Models\BillItemLine;
 use App\Models\BillCategoryLine;
+use App\Models\PurchaseReturn;
 
 class CreateBill
 {
@@ -23,12 +24,12 @@ class CreateBill
                 $product = Product::find(request("item_lines.'product_id'.".$row));
                 if ($product->track_quantity) {
                     $company = \Auth::user()->currentCompany->company;
-                    $quantityReturned = $bill->purchaseReturns
-                        ->where('product_id', $product->id)->sum('quantity');
-                    $quantity = request("item_lines.'quantity'.".$row) - $quantityReturned;
-                    $amountReturned = $bill->purchaseReturns
-                        ->where('product_id', $product->id)->sum('amount');
-                    $amount = request("item_lines.'amount'.".$row) - $amountReturned;
+//                    $quantityReturned = $bill->purchaseReturns
+//                        ->where('product_id', $product->id)->sum('quantity');
+                    $quantity = request("item_lines.'quantity'.".$row);
+//                    $amountReturned = $bill->purchaseReturns
+//                        ->where('product_id', $product->id)->sum('amount');
+                    $amount = request("item_lines.'amount'.".$row);
                     $purchase = new Purchase([
                         'company_id' => $company->id,
                         'date' => request('bill_date'),

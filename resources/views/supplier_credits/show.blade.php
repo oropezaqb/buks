@@ -26,7 +26,7 @@
                                 @endif
                                 <div class="form-group custom-control-inline">
                                     <label for="purchasable_doc">Document</label>&nbsp;
-                                    <input list="purchasable_docs" id="purchasable_doc0" onchange="setValue(this)" data-id="" class="custom-select @error('purchasable_doc') is-danger @enderror" required value="{!! old('purchasable_doc', class_basename($supplierCredit->purchasable)) !!}">
+                                    <input list="purchasable_docs" id="purchasable_doc0" onchange="setValue(this)" data-id="" class="custom-select @error('purchasable_doc') is-danger @enderror" required value="{!! old('purchasable_doc', class_basename($supplierCredit->purchasable_type)) !!}">
                                     <datalist id="purchasable_docs">
                                         <option data-value="Bill">Bill</option>
                                         <option data-value="Cheque">Cheque</option>
@@ -37,20 +37,20 @@
                                 <div class="form-group custom-control-inline">
                                     <label for="number">Doc&nbsp;no.&nbsp;</label>&nbsp;
                                     <input type="number" class="form-control" id="doc_number" name="doc_number" style="text-align: right;"
-                                        required value="{!! old('doc_number', $supplierCredit->purchasable->bill_number) !!}" oninput="getDocument()">
-                                    <input type="hidden" name="doc_id" id="doc_id" value="{!! old('doc_id', $supplierCredit->purchasable->id) !!}">
+                                        required value="{!! $supplierCredit->number !!}" oninput="getDocument()">
+                                    <input type="hidden" name="doc_id" id="doc_id" value="{!! old('doc_id') !!}">
                                 </div>
                                 <br><br>
                                 <div class="form-group custom-control-inline">
                                     <label for="supplier_id">Supplier</label>&nbsp;
-                                    <input list="supplier_ids" id="supplier_id0" onchange="setValue(this)" data-id="" class="custom-select @error('supplier_id') is-danger @enderror" required value="{!! old('supplier_name', $supplierCredit->purchasable->supplier->name) !!}">
+                                    <input list="supplier_ids" id="supplier_id0" onchange="setValue(this)" data-id="" class="custom-select @error('supplier_id') is-danger @enderror" required value="{!! old('supplier_name', $supplierCredit->supplier->name) !!}">
                                     <datalist id="supplier_ids">
                                         @foreach ($suppliers as $supplier)
                                             <option data-value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                         @endforeach
                                     </datalist>
-                                    <input type="hidden" name="supplier_id" id="supplier_id0-hidden" value="{!! old('supplier_id', $supplierCredit->purchasable->supplier->id) !!}">
-                                    <input type="hidden" name="supplier_name" id="name-supplier_id0-hidden" value="{!! old('supplier_name', $supplierCredit->purchasable->supplier->name) !!}">
+                                    <input type="hidden" name="supplier_id" id="supplier_id0-hidden" value="{!! old('supplier_id', $supplierCredit->supplier->id) !!}">
+                                    <input type="hidden" name="supplier_name" id="name-supplier_id0-hidden" value="{!! old('supplier_name', $supplierCredit->supplier->name) !!}">
                                 </div>
                                 <div class="form-group custom-control-inline">
                                     <label for="date">Date&nbsp;</label>&nbsp;

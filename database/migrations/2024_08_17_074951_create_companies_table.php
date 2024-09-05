@@ -541,15 +541,19 @@ return new class extends Migration
         Schema::create('supplier_credits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('supplier_id');
             $table->morphs('purchasable');
             $table->date('date');
             $table->unsignedBigInteger('number');
-            $table->unique(['company_id', 'number'], 'my_unique_ref');
+            $table->unique(['company_id', 'supplier_id', 'purchasable_type',  'number'], 'my_unique_ref');
             $table->timestamps();
             $table->foreign('company_id')
                 ->references('id')
                 ->on('companies')
                 ->onDelete('cascade');
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers');
         });
         Schema::create('supplier_credit_clines', function (Blueprint $table) {
             $table->id();

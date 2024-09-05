@@ -189,6 +189,7 @@ class CreateSupplierCredit
     }
     public function deletePurchaseReturns($supplierCredit, $document)
     {
+//        $purchaseReturns = PurchaseReturn::where('returnablepurc_type', 'App\SupplierCredit')->get();
         foreach ($supplierCredit->purchaseReturns as $purchaseReturn) {
             $purchaseReturn->delete();
         }
@@ -208,7 +209,7 @@ class CreateSupplierCredit
                         'product_id' => $product->id,
                         'quantity' => request("item_lines.'quantity'.".$row),
                         'amount' => request("item_lines.'amount'.".$row),
-                        'returnablepurc_type' => 'App\SupplierCredit',
+                        'returnablepurc_type' => 'App\Models\SupplierCredit',
                         'returnablepurc_id' => $supplierCredit->id
                     ]);
                     $document->purchaseReturns()->save($purchaseReturn);
@@ -218,8 +219,10 @@ class CreateSupplierCredit
     }
     public function deletePurchases($supplierCredit, $document)
     {
-        foreach ($document->purchases as $purchase) {
-            $purchase->delete();
+        if (!is_null($document)) {
+            foreach ($document->purchases as $purchase) {
+                $purchase->delete();
+            }
         }
     }
     public function updatePurchases($supplierCredit, $document)

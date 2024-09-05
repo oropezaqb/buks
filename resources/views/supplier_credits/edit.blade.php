@@ -56,7 +56,7 @@
                                 <div class="form-group custom-control-inline">
                                     <label for="number">Doc&nbsp;no.&nbsp;</label>&nbsp;
                                     <input type="number" class="form-control" id="doc_number" name="doc_number" style="text-align: right;"
-                                        required value="{!! old('doc_number', $supplierCredit->purchasable->bill_number) !!}" oninput="getDocument()">
+                                        required value="{!! old('doc_number', $supplierCredit->number) !!}" oninput="getDocument()">
                                     <input type="hidden" name="doc_id" id="doc_id" value="{!! old('doc_id', $supplierCredit->purchasable->id) !!}">
                                 </div>
                                 <br><br>
@@ -166,6 +166,7 @@
                                 {
                                   var purchasable_doc = document.getElementById('purchasable_doc0-hidden').value;
                                   var doc_number = document.getElementById('doc_number').value;
+                                  var supplier_id = document.getElementById('supplier_id0-hidden').value;
                                   let _token = $('meta[name="csrf-token"]').attr('content');
                                   $.ajaxSetup({
                                     headers: {
@@ -175,7 +176,7 @@
                                   $.ajax({
                                     type:'POST',
                                     url:'/supplier_credits/getdocument',
-                                    data: {_token: _token, purchasable_doc: purchasable_doc, doc_number: doc_number},
+                                    data: {_token: _token, purchasable_doc: purchasable_doc, doc_number: doc_number, supplier_id: supplier_id},
                                     dataType: 'json',
                                     success:function(data) {
                                       doc = data.document;

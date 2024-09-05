@@ -26,13 +26,16 @@ class AjaxSCController extends Controller
         $company = \Auth::user()->currentCompany->company;
         $purchasableDoc = $request->input('purchasable_doc');
         $docNumber = $request->input('doc_number');
+        $supplierId = $request->input('supplier_id');
         $document = null;
         switch ($purchasableDoc) {
             case 'Bill':
-                $document = Bill::where('company_id', $company->id)->where('bill_number', $docNumber)->first();
+                $document = Bill::where('company_id', $company->id)->where('supplier_id', $supplierId)
+                    ->where('bill_number', $docNumber)->first();
                 break;
             case 'Cheque':
-                $document = Cheque::where('company_id', $company->id)->where('number', $docNumber)->first();
+                $document = Cheque::where('company_id', $company->id)->where('supplier_id', $supplierId)
+                    ->where('number', $docNumber)->first();
                 break;
             default:
                 $document = null;

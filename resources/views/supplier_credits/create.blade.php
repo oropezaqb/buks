@@ -164,6 +164,7 @@
                                 {
                                   var purchasable_doc = document.getElementById('purchasable_doc0-hidden').value;
                                   var doc_number = document.getElementById('doc_number').value;
+                                  var supplier_id = document.getElementById('supplier_id0-hidden').value;
                                   let _token = $('meta[name="csrf-token"]').attr('content');
                                   $.ajaxSetup({
                                     headers: {
@@ -173,7 +174,7 @@
                                   $.ajax({
                                     type:'POST',
                                     url:'/supplier_credits/getdocument',
-                                    data: {_token: _token, purchasable_doc: purchasable_doc, doc_number: doc_number},
+                                    data: {_token: _token, purchasable_doc: purchasable_doc, doc_number: doc_number, supplier_id: supplier_id},
                                     dataType: 'json',
                                     success:function(data) {
                                       doc = data.document;

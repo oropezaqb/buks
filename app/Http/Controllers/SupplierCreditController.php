@@ -92,12 +92,14 @@ class SupplierCreditController extends Controller
                 $supplierCredit = new SupplierCredit([
                     'company_id' => $company->id,
                     'date' => request('date'),
+                    'supplier_id' => request('supplier_id'),
                     'number' => request('number'),
                 ]);
                 $document->supplierCredits()->save($supplierCredit);
                 $saveSCLines = new SaveSCLines();
                 $saveSCLines->updateLines($supplierCredit, $document);
                 $createSupplierCredit = new CreateSupplierCredit();
+                $createSupplierCredit->deletePurchaseReturns($supplierCredit, $document);
                 $createSupplierCredit->savePurchaseReturns($supplierCredit, $document);
                 $createSupplierCredit->deletePurchases($supplierCredit, $document);
                 $createSupplierCredit->updatePurchases($supplierCredit, $document);
@@ -147,6 +149,7 @@ class SupplierCreditController extends Controller
         $suppliers = Supplier::where('company_id', $company->id)->latest()->get();
         $accounts = Account::where('company_id', $company->id)->latest()->get();
         $products = Product::where('company_id', $company->id)->latest()->get();
+//dd($supplierCredit->purchasable_type);
         return view(
             'supplier_credits.show',
             compact('supplierCredit', 'suppliers', 'accounts', 'products')
@@ -202,6 +205,7 @@ class SupplierCreditController extends Controller
                 $supplierCredit->update([
                     'company_id' => $company->id,
                     'date' => request('date'),
+                    'supplier_id' => request('supplier_id'),
                     'number' => request('number'),
                 ]);
                 $document->supplierCredits()->save($supplierCredit);
