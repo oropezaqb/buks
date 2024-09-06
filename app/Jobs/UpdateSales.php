@@ -77,7 +77,7 @@ class UpdateSales
 
 
 
-    public function recordSales($transaction)
+    public function recordSale($transaction)
     {
         $company = \Auth::user()->currentCompany->company;
             $invoice = $transaction->transactable;

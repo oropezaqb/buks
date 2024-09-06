@@ -45,7 +45,7 @@ class CashReceiptController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         //
     }
@@ -56,7 +56,7 @@ class CashReceiptController extends Controller
      * @param  \App\CashReceipt  $cashReceipt
      * @return \Illuminate\Http\Response
      */
-    public function show(CashReceipt $cashReceipt)
+    public function show()
     {
         //
     }
@@ -67,7 +67,7 @@ class CashReceiptController extends Controller
      * @param  \App\CashReceipt  $cashReceipt
      * @return \Illuminate\Http\Response
      */
-    public function edit(CashReceipt $cashReceipt)
+    public function edit()
     {
         //
     }
@@ -79,7 +79,7 @@ class CashReceiptController extends Controller
      * @param  \App\CashReceipt  $cashReceipt
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CashReceipt $cashReceipt)
+    public function update()
     {
         //
     }
@@ -90,7 +90,7 @@ class CashReceiptController extends Controller
      * @param  \App\CashReceipt  $cashReceipt
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CashReceipt $cashReceipt)
+    public function destroy()
     {
         //
     }

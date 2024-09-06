@@ -73,7 +73,7 @@ class InvoiceController extends Controller
     }
     public function store(StoreInvoice $request)
     {
-        try {
+//        try {
             \DB::transaction(function () use ($request) {
                 $company = \Auth::user()->currentCompany->company;
                 $invoice = new Invoice([
@@ -88,15 +88,15 @@ class InvoiceController extends Controller
                 $createInvoice->updateLines($invoice);
                 $createInvoice->recordTransaction($invoice);
                 $updateSales = new UpdateSales();
-                $updateSales->updateSales(request('date'), null);
+                $updateSales->updateSales(request('date'));
 //                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)->where('type', 'sale')
 //                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
 //                $createInvoice->updateSales($salesForUpdate);
             });
             return redirect(route('invoices.index'));
-        } catch (\Exception $e) {
-            return back()->with('status', $this->translateError($e))->withInput();
-        }
+//        } catch (\Exception $e) {
+//            return back()->with('status', $this->translateError($e))->withInput();
+//        }
     }
     public function translateError($e)
     {
