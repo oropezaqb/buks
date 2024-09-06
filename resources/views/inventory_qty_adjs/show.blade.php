@@ -106,6 +106,7 @@
                                 var accounttitles = new Array();
                                 var productnames = new Array();
                                 var amounts = new Array();
+                                updateLines();
                                 function updateLines()
                                 {
                                   product_inputs = $(".item-lines");

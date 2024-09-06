@@ -1,0 +1,3 @@
+app/Jobs/CreateSupplierCredit.php
+app/Jobs/ValidateSCItemLines.php
+app/Jobs/CreateInventoryQtyAdj.php

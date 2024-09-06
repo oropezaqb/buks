@@ -82,11 +82,13 @@ class CreateInventoryQtyAdj
             $changeInQty = $line->change_in_qty * -1;
             do {
                 $company = \Auth::user()->currentCompany->company;
-                $purchase = $this->determinePurchaseSold($company, $product);
+                $createInvoice = new CreateInvoice();
+                $purchase = $createInvoice->determinePurchaseSold($company, $product);
                 if (is_object($purchase)) {
                     $numberUnrecorded = $changeInQty - $numberRecorded;
-                    $quantity = $this->determineQuantitySold($company, $purchase, $numberUnrecorded);
-                    $amount = $this->determineAmountSold($company, $purchase, $numberUnrecorded);
+                    $createInvoice = new CreateInvoice();
+                    $quantity = $createInvoice->determineQuantitySold($company, $purchase, $numberUnrecorded);
+                    $amount = $createInvoice->determineAmountSold($company, $purchase, $numberUnrecorded);
                     $sale = new Sale([
                         'company_id' => $company->id,
                         'purchase_id' => $purchase->id,
@@ -103,40 +105,6 @@ class CreateInventoryQtyAdj
             } while ($numberRecorded < $changeInQty);
         }
     }
-    public function determinePurchaseSold($company, $product)
-    {
-        $allPurchases = Purchase::where('company_id', $company->id)->where('product_id', $product->id)->get();
-        $purchases = $allPurchases->sortBy('date');
-        foreach ($purchases as $purchase) {
-            $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-            if ($numberSold < $purchase->quantity) {
-                return $purchase;
-            }
-        }
-    }
-    public function determineQuantitySold($company, $purchase, $numberUnrecorded)
-    {
-        $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-        $numberUnsold = $purchase->quantity - $numberSold;
-        if ($numberUnrecorded < $numberUnsold) {
-            return $numberUnrecorded;
-        } else {
-            return $numberUnsold;
-        }
-    }
-    public function determineAmountSold($company, $purchase, $numberUnrecorded)
-    {
-        $numberSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('quantity');
-        $numberUnsold = $purchase->quantity - $numberSold;
-        $amountSold = Sale::where('company_id', $company->id)->where('purchase_id', $purchase->id)->sum('amount');
-        $amountUnsold = $purchase->amount - $amountSold;
-        if ($numberUnrecorded < $numberUnsold) {
-            $costOfSales = round($amountUnsold / $numberUnsold * $numberUnrecorded, 2);
-            return $costOfSales;
-        } else {
-            return $amountUnsold;
-        }
-    }
     public function recordJournalEntry($inventoryQtyAdj)
     {
         $company = \Auth::user()->currentCompany->company;
@@ -150,10 +118,10 @@ class CreateInventoryQtyAdj
         ]);
         $inventoryQtyAdj->journalEntry()->save($journalEntry);
         foreach ($inventoryQtyAdj->purchases as $purchase) {
-            $this->recordPurchasePosting($journalEntry, $purchase);
+            $this->recordPurchasePosting($inventoryQtyAdj, $journalEntry, $purchase);
         }
         foreach ($inventoryQtyAdj->sales as $sale) {
-            $this->recordSalePosting($journalEntry, $sale);
+            $this->recordSalePosting($inventoryQtyAdj, $journalEntry, $sale);
         }
     }
     public function recordPurchasePosting($journalEntry, $purchase)

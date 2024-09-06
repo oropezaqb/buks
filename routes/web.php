@@ -28,6 +28,7 @@ use App\Http\Controllers\AjaxCNController;
 use App\Http\Controllers\SupplierCreditController;
 use App\Http\Controllers\AjaxSCController;
 use App\Http\Controllers\InventoryQtyAdjController;
+use App\Http\Controllers\AjaxInvQtyAdjController;
 use App\Http\Controllers\CashReceiptController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckCurrentCompany;

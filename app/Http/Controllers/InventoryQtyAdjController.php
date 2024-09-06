@@ -18,6 +18,7 @@ use App\Jobs\UpdateSales;
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @SuppressWarnings(PHPMD.UndefinedVariable)
      * @SuppressWarnings(PHPMD.ShortVariableName)
+     * @SuppressWarnings(PHPMD.LongVariable)
      */
 
 class InventoryQtyAdjController extends Controller
@@ -94,8 +95,6 @@ class InventoryQtyAdjController extends Controller
                 $createInventoryQtyAdj = new CreateInventoryQtyAdj();
                 $createInventoryQtyAdj->updateLines($inventoryQtyAdj);
                 $createInventoryQtyAdj->recordTransaction($inventoryQtyAdj);
-                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)
-                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
                 $updateSales = new UpdateSales();
                 $updateSales->updateSales(request('date'));
             });
@@ -190,8 +189,6 @@ class InventoryQtyAdjController extends Controller
                 $createInventoryQtyAdj->deleteInventoryQtyAdj($inventoryQtyAdj);
                 $createInventoryQtyAdj->updateLines($inventoryQtyAdj);
                 $createInventoryQtyAdj->recordTransaction($inventoryQtyAdj);
-                $salesForUpdate = \DB::table('transactions')->where('company_id', $company->id)
-                    ->where('date', '>=', request('date'))->orderBy('date', 'asc')->get();
                 $updateSales = new UpdateSales();
                 $updateSales->updateSales($changeDate);
             });

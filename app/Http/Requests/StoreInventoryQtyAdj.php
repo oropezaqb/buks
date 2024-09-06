@@ -56,7 +56,7 @@ class StoreInventoryQtyAdj extends FormRequest
     {
         $validator->after(function ($validator) {
             global $thereIsAmount;
-            $company = \Auth::user()->currentCompany->company;
+//            $company = \Auth::user()->currentCompany->company;
             if (!is_int(filter_var(request('number'), FILTER_VALIDATE_INT))) {
                 $validator->errors()->add('number', 'Reference number must be an integer.');
             }
