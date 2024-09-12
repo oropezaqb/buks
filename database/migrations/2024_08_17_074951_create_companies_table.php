@@ -646,9 +646,6 @@ return new class extends Migration
             $table->date('date');
             $table->unsignedBigInteger('number');
             $table->text('memo')->nullable();
-            $table->unsignedBigInteger('cashback_account_id');
-            $table->text('cashback_memo')->nullable();
-            $table->decimal('cashback_amount', 13, 2);
             $table->unique(['company_id', 'number'], 'my_unique_ref');
             $table->timestamps();
             $table->foreign('company_id')
@@ -656,9 +653,6 @@ return new class extends Migration
                 ->on('companies')
                 ->onDelete('cascade');
             $table->foreign('account_id')
-                ->references('id')
-                ->on('accounts');
-            $table->foreign('cashback_account_id')
                 ->references('id')
                 ->on('accounts');
         });

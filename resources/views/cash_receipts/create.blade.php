@@ -98,27 +98,6 @@
                                     <input id="total_tax" type="text" width="15" readonly style="text-align: right;" class="form-control">
                                 </div>
                                 <br>
-                                <div style="float: right; clear: both;">
-                                    <div class="form-group custom-control-inline">
-                                        <label for="cashback_account_id">Cash&nbsp;back&nbsp;goes&nbsp;to</label>&nbsp;
-                                        <input list="account_ids" id="account_id1" onchange="setValue(this)" data-id="" class="custom-select @error('cashback_account_id') is-danger @enderror" required value="{!! old('cashback_account_name') !!}">
-                                        <datalist id="account_ids">
-                                            @foreach ($accounts as $account)
-                                                <option data-value="{{ $account->id }}">{{ $account->name }}</option>
-                                            @endforeach
-                                        </datalist>
-                                        <input type="hidden" name="cashback_account_id" id="cashback_account_id0-hidden" value="{!! old('cashback_account_id') !!}">
-                                        <input type="hidden" name="cashback_account_name" id="name-cashback_account_id0-hidden" value="{!! old('cashback_account_name') !!}">
-                                    </div>
-                                    <div class="form-group custom-control-inline">
-                                        <label for="cashback_memo">Cash&nbsp;back&nbsp;memo</label>&nbsp;
-                                        <textarea id="cashback_memo" name="cashback_memo" class="form-control" rows="1" cols="10" required>{!! old('cashback_memo') !!}</textarea>
-                                    </div>
-                                    <div class="form-group custom-control-inline">
-                                        <label for="cashback_amount">Cash&nbsp;back&nbsp;amount</label>&nbsp;
-                                        <input id="cashback_amount" type="text" width="15" style="text-align: right;" class="form-control" oninput="updateTotalTax()">
-                                    </div>
-                                </div>
                                 <div class="form-group custom-control-inline" style="float: right; clear: both;">
                                     <label for="total">Total</label>&nbsp;
                                     <input id="total" type="text" width="15" readonly style="text-align: right;" class="form-control">
@@ -436,17 +415,13 @@
                                 function updateTotal() {
                                     subtotal = parseInt(document.getElementById("subtotal").value);
                                     tax = parseInt(document.getElementById("total_tax").value);
-                                    cashback_amount = parseInt(document.getElementById("cashback_amount").value);
                                     if(isNaN(subtotal)) {
                                         subtotal = 0;
                                     }
                                     if(isNaN(tax)) {
                                         tax = 0;
                                     }
-                                    if(isNaN(cashback_amount)) {
-                                        cashback_amount = 0;
-                                    }
-                                    document.getElementById("total").value = subtotal + tax - cashback_amount;
+                                    document.getElementById("total").value = subtotal + tax;
                                 }
                                 @if (!empty(old('category_lines')))
                                     var a = <?php echo json_encode(old("category_lines.'account_id'")); ?>;
